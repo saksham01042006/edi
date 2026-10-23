@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.pytest_cache/
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Local env and runtime files
+.env
+.env.*
+*.log
+
+# Local DB / generated artifacts
+*.db
+*.sqlite3
+
+# Editors
+.vscode/
+.DS_Store
