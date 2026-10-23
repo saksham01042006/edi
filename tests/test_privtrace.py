@@ -1,16 +1,7 @@
-import os
-import sys
-
 import pytest
 from fastapi.testclient import TestClient
 
-BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend'))
-if BACKEND_ROOT not in sys.path:
-    sys.path.insert(0, BACKEND_ROOT)
-
-from app.analyzer import analyze_python_source
-from app.database import Base, engine
-from main import app
+from app import Base, analyze_python_source, app, engine
 
 
 @pytest.fixture(autouse=True)

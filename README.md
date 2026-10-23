@@ -1,70 +1,45 @@
 # PrivTrace
 
-PrivTrace is a policy-aware sensitive data flow analysis and leakage detection prototype built as a full-stack academic project. The application parses Python source code without executing it, traces supported direct flows and aliases, applies privacy policies, and surfaces findings with evidence and graph information.
+PrivTrace is a policy-aware static analyzer for tracing selected sensitive data through supported Python code. The entire application—FastAPI API, SQLite models, AST analyzer, and light-theme dashboard—is implemented in the single `app.py` file. Python source code is parsed and is never executed.
 
 ## Features
-- Static Python analysis using the `ast` module
-- Sensitive-source detection for request input, password, API key, and email flows
-- Direct alias propagation and assignment tracing
-- Supported sink detection for logging, file writes, and outbound HTTP requests
-- Policy evaluation for password logging, API destination allowlists, and sensitive logs
-- FastAPI backend with SQLite persistence and JSON export
-- React + Vite dashboard with analyzer and graph explorer
+- Static Python AST analysis and direct assignment/alias tracking
+- Detection of password logging, sensitive file writes, and API keys sent to unapproved destinations
+- Explainable findings with source, destination, line evidence, remediation, and limitations
+- Project, policy, analysis history, and JSON report API with SQLite persistence
+- Interactive dashboard with analysis results and a flow graph
 
-## Architecture
-- `backend/` contains FastAPI application, SQLAlchemy models, static analyzer, and persistence helpers.
-- `frontend/` contains the Vite + React dashboard and graph viewer.
-- `sample_code/` is reserved for demonstration inputs.
-- `tests/` contains regression tests for the static analyzer and API flow.
-
-## Stack
-- Frontend: React, TypeScript, Vite
-- Backend: FastAPI, SQLAlchemy, SQLite
-- Analyzer: Python `ast`
-- Validation: pytest
-
-## Prerequisites
+## Requirements
 - Python 3.10+
-- Node.js 18+
-- npm
-- Access to local ports `8000` and `5173`
+- Install dependencies from the project root:
 
-## Windows setup
-1. Open PowerShell in the project root.
-2. Create a virtual environment:
-   `python -m venv .venv`
-3. Activate it:
-   `.\.venv\Scripts\Activate.ps1`
-4. Install backend dependencies:
-   `cd backend`
-   `pip install -r requirements.txt`
-5. Install frontend dependencies:
-   `cd ..\frontend`
-   `npm install`
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-## Environment configuration
-Create a `.env` file in the project root using `.env.example` as a template.
+## Run the application
 
-## Database initialization
-The application initializes the SQLite database automatically on startup and creates tables via SQLAlchemy.
+From the project root:
 
-## Run the backend
-`cd backend`
-`python -m uvicorn main:app --host 0.0.0.0 --port 8000`
+```powershell
+python app.py
+```
 
-## Run the frontend
-`cd frontend`
-`npm run dev -- --host 0.0.0.0`
+Open `http://localhost:8000`. The API documentation is available at `http://localhost:8000/docs`. To use a different port, set the `PORT` environment variable before starting the app.
 
-## API docs
-Open `http://localhost:8000/docs` after starting the backend.
+The SQLite database is created automatically next to `app.py`. Set `DATABASE_URL` or `MAX_FILE_SIZE_BYTES` to override the defaults.
 
 ## Run tests
-`cd ..`
-`python -m pytest tests/test_privtrace.py -q`
 
-## Try the demonstration
-Analyze the sample code in the Code Analyzer page or send a request to the backend using the demo source:
+```powershell
+python -m pytest tests/test_privtrace.py -q
+```
+
+## Demonstration
+
+The dashboard starts with this example, which should produce a high-severity password-logging finding:
 
 ```python
 def login(request):
@@ -73,14 +48,7 @@ def login(request):
     logger.info("Login attempt: %s", attempted_value)
 ```
 
-This should produce a genuine finding for the `no-password-logging` policy.
-
 ## Limitations
-- The analyzer is intentionally conservative and supports only direct assignments, aliases, and a limited set of sinks.
-- Dynamic runtime values, reflection, and complex interprocedural flows are out of scope.
-- Policy evaluation does not prove a codebase is secure; it highlights supported paths based on static evidence.
-
-## Troubleshooting
-- If the backend cannot connect, verify the virtual environment and run the uvicorn command again.
-- If the frontend cannot reach the backend, ensure CORS is enabled and the backend is running on port 8000.
-- If pytest fails, confirm dependencies were installed in the active environment and run the tests again.
+- The analyzer deliberately supports a limited set of syntax patterns, sources, aliases, and sinks.
+- Dynamic runtime values, reflection, and complex interprocedural flows are not fully analyzed.
+- Results are evidence of supported static paths, not a proof of security or compliance.

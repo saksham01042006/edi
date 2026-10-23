@@ -7,7 +7,7 @@ __pycache__/
 venv/
 .pytest_cache/
 
-# Node / frontend
+# Obsolete frontend build artifacts (not part of the application source)
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
@@ -20,6 +20,7 @@ frontend/.vite/
 # Local DB / generated artifacts
 *.db
 *.sqlite3
+*.db-journal
 
 # Editors
 .vscode/
